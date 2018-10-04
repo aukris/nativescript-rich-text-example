@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <base href="/">
+  <title>Rich Text Editor</title>
+  <!--<link rel="preload" href="../../fonts/icomoon.ttf" as="font" type="font/ttf" crossorigin/>-->
+  <script src="https://rawgit.com/aukris/ng-elements-rich-text-editor/master/nativescript-webview-interface.js" type="application/javascript"></script>
+  <script src="https://rawgit.com/aukris/ng-elements-rich-text-editor/master/elements.js" type="application/javascript"></script>
+
+  <style>
+    html, body{
+      padding: 0px;
+      margin: 0px;
+    }
+
+    /*@font-face {*/
+      /*font-family: 'icomoon';*/
+      /*src: url('../fonts/icomoon.ttf?2pjlvt') format('truetype');*/
+      /*font-weight: normal;*/
+      /*font-style: normal;*/
+    /*}*/
+  </style>
+</head>
+
+<body>
+
+  <tap-rich-text></tap-rich-text>
+
+
+  <script>
+
+    (function() {
+        const oWebViewInterface = window.nsWebViewInterface;
+
+       const editorELe = document.querySelector('tap-rich-text');
+       editorELe.focus();
+       const angularComp = editorELe.ngElementStrategy.componentRef.instance;
+      angularComp.focusAtEditorEndIfNotInFocus();
+
+      window.getContent = function(){
+        return angularComp.getContent();
+      };
+
+        editorELe.addEventListener('nativeScriptEvent', function(event) { //event bound for NativeScript
+            oWebViewInterface.emit('nativeScriptEvent', event.detail);
+        });
+
+
+        oWebViewInterface.on('javaScriptEvent', function(eventData) {
+           const mode = +eventData.mode;
+           const dataStr = eventData.dataStr;
+           if (mode === 1) {
+                angularComp.insertLink(dataStr);
+            } else if (mode === 2){
+                angularComp.insertImage(dataStr);
+            } else if (mode === 3) {
+                angularComp.insertVideo(dataStr);
+            } else if (mode === 4) {
+                angularComp.setContent(dataStr);
+           }
+       });
+
+})();
+
+
+  </script>
+</body>
+
+</html>
